@@ -1,0 +1,5 @@
+{
+  "name": "G-Comics",
+  "description": "A Google-styled comic reader and management platform featuring Admin upload capabilities and AI-assisted descriptions.",
+  "requestFramePermissions": []
+}
