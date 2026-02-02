@@ -8,7 +8,14 @@ interface HomeProps {
   searchQuery: string;
 }
 
-const API_BASE_URL = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5001';
+const ASSET_BASE_URL = (() => {
+  const api = import.meta.env.VITE_API_URL;
+  // If api is relative (e.g. "/api"), assets are same-origin.
+  if (!api) return import.meta.env.DEV ? 'http://localhost:5001' : '';
+  if (api.startsWith('/')) return '';
+  // If api is absolute (e.g. "http://localhost:5001/api"), strip the "/api" suffix.
+  return api.replace(/\/api\/?$/, '');
+})();
 
 export const Home: React.FC<HomeProps> = ({ comics, searchQuery }) => {
   const navigate = useNavigate();
@@ -43,7 +50,7 @@ export const Home: React.FC<HomeProps> = ({ comics, searchQuery }) => {
             >
                 <div className="relative aspect-[2/3] overflow-hidden rounded-lg bg-gray-200 border border-gray-200 transition-shadow group-hover:shadow-md">
                     <img
-                        src={`${API_BASE_URL}${comic.coverUrl}`}
+                        src={`${ASSET_BASE_URL}${comic.coverUrl}`}
                         alt={comic.title}
                         className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                         loading="lazy"

@@ -7,7 +7,14 @@ import { generateComicDescription } from '../services/geminiService';
 import { Comic, User } from '../types';
 import { Trash2, Sparkles, Plus, Image as ImageIcon } from 'lucide-react';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5001';
+const ASSET_BASE_URL = (() => {
+  const api = import.meta.env.VITE_API_URL;
+  // If api is relative (e.g. "/api"), assets are same-origin.
+  if (!api) return import.meta.env.DEV ? 'http://localhost:5001' : '';
+  if (api.startsWith('/')) return '';
+  // If api is absolute (e.g. "http://localhost:5001/api"), strip the "/api" suffix.
+  return api.replace(/\/api\/?$/, '');
+})();
 
 interface AdminProps {
   user: User | null;
@@ -251,7 +258,7 @@ export const Admin: React.FC<AdminProps> = ({ user, onLoginSuccess }) => {
                             <div className="h-16 w-12 bg-gray-100 rounded overflow-hidden shadow-sm relative border border-gray-200">
                                 {comic.coverUrl ? (
                                     <img
-                                        src={`${API_BASE_URL}${comic.coverUrl}`}
+                                        src={`${ASSET_BASE_URL}${comic.coverUrl}`}
                                         className="w-full h-full object-cover object-top transition-transform duration-300 group-hover:scale-110"
                                         alt={comic.title}
                                         onError={(e) => {

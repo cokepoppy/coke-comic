@@ -5,7 +5,14 @@ import { getComics } from '../services/storageService';
 import { Button } from '../components/Button';
 import { ChevronLeft, Info, MessageSquare, ChevronRight } from 'lucide-react';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5001';
+const ASSET_BASE_URL = (() => {
+  const api = import.meta.env.VITE_API_URL;
+  // If api is relative (e.g. "/api"), assets are same-origin.
+  if (!api) return import.meta.env.DEV ? 'http://localhost:5001' : '';
+  if (api.startsWith('/')) return '';
+  // If api is absolute (e.g. "http://localhost:5001/api"), strip the "/api" suffix.
+  return api.replace(/\/api\/?$/, '');
+})();
 
 export const Reader: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -174,7 +181,7 @@ export const Reader: React.FC = () => {
                 <div className="relative w-full h-full flex items-center justify-center">
                     <img
                         key={currentIndex} /* Force re-render for animation */
-                        src={`${API_BASE_URL}${comic.pages[currentIndex]}`}
+                        src={`${ASSET_BASE_URL}${comic.pages[currentIndex]}`}
                         alt={`Page ${currentIndex + 1}`}
                         className="max-w-full max-h-full object-contain shadow-2xl animate-fade-in select-none"
                     />
@@ -186,7 +193,7 @@ export const Reader: React.FC = () => {
         {showInfo && (
             <div className="w-full lg:w-80 bg-[#292a2d] border-l border-gray-700 p-6 overflow-y-auto text-gray-300 shadow-xl absolute lg:relative right-0 h-full z-40 animate-fade-in">
                 <div className="flex items-start gap-4 mb-6">
-                    <img src={`${API_BASE_URL}${comic.coverUrl}`} className="w-24 rounded shadow-lg" alt="Cover" />
+                    <img src={`${ASSET_BASE_URL}${comic.coverUrl}`} className="w-24 rounded shadow-lg" alt="Cover" />
                     <div>
                         <h2 className="text-white font-medium text-lg leading-tight">{comic.title}</h2>
                         <p className="text-sm text-gray-400 mt-1">by {comic.author}</p>

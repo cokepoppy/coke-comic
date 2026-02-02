@@ -6,10 +6,14 @@ import app from './app';
 import logger from './config/logger';
 // Import database to trigger connection test
 import './config/database';
+import { seedAdminIfNeeded } from './utils/seedAdmin';
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
+(async () => {
+  await seedAdminIfNeeded();
+
+  app.listen(PORT, () => {
   logger.info('🚀 ================================');
   logger.info(`🚀 Server is running on port ${PORT}`);
   logger.info(`🚀 Environment: ${process.env.NODE_ENV || 'development'}`);
@@ -17,7 +21,8 @@ app.listen(PORT, () => {
   logger.info(`📍 API Base URL: http://localhost:${PORT}/api`);
   logger.info(`❤️  Health Check: http://localhost:${PORT}/health`);
   logger.info('🚀 ================================');
-});
+  });
+})();
 
 // Graceful shutdown
 process.on('SIGTERM', () => {
